@@ -1,0 +1,1 @@
+docker build . -t chenaoki/pytorch_jupyter:0.1
