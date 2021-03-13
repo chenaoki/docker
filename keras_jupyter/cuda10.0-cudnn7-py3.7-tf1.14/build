@@ -1,0 +1,1 @@
+docker build . -t chenaoki/keras_jupyter:cuda10.0-cudnn7-py3.7-tf1.14
