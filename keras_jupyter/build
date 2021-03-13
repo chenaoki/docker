@@ -1,1 +1,1 @@
-docker build . -t chenaoki/kears_jupyter:0.1
+docker build . -t chenaoki/keras_jupyter:0.2

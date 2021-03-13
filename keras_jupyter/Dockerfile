@@ -1,30 +1,40 @@
 # chenaok/keras_jupyter
 
-FROM continuumio/anaconda3
-
-MAINTAINER chenaoki <chenaoki@gmail.com>
-
-RUN apt-get update --fix-missing
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu18.04
 
 USER root
-ENV HOME /root
-ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+RUN apt update && apt install -y wget vim git zsh make ffmpeg bzip2 build-essential curl 
+
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh -O ./anaconda.sh
+RUN /bin/bash ./anaconda.sh -b -p /opt/conda
 ENV PATH /opt/conda/bin:$PATH
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc 
+RUN echo "conda activate base" >> ~/.bashrc
 
-ENV NOTEBOOK_HOME /notebooks
-RUN mkdir -p $NOTEBOOK_HOME 
-
-##########################
+RUN pip3 install tensorflow-gpu==2.2.0
 
 RUN conda update -y conda
-RUN conda install cudatoolkit
-RUN conda install cudnn
-RUN conda install tensorflow-gpu
+RUN conda install cudatoolkit==10.0.130
 RUN conda install keras
-RUN conda install -c numba numba
 
-##########################
+#####################################################
 
+RUN useradd -U docker
+RUN groupmod -g 999 docker
+
+ENV HOME /home/docker
+ENV NOTEBOOK_HOME /notebooks
+
+RUN mkdir $HOME
+RUN chown docker:docker $HOME 
+RUN mkdir $NOTEBOOK_HOME
+RUN chown docker:docker $NOTEBOOK_HOME 
+
+#####################################################
+
+USER docker
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 WORKDIR $HOME 
 RUN jupyter notebook --generate-config
@@ -34,16 +44,11 @@ RUN echo "c.NotebookApp.open_browser = False" >> $HOME/.jupyter/jupyter_notebook
 RUN echo "c.NotebookApp.notebook_dir = '$NOTEBOOK_HOME'" >> $HOME/.jupyter/jupyter_notebook_config.py
 
 
-##########################
-
-
 WORKDIR $HOME
-RUN apt-get install -y zsh
 RUN git clone https://github.com/chenaoki/dotfiles.git
 WORKDIR $HOME/dotfiles
 RUN python install.py
-WORKDIR $HOME
 
-##########################
-
+WORKDIR $NOTEBOOK_HOME
+CMD ["sh", "-c", "jupyter notebook > $NOTEBOOK_HOME/log.txt 2>&1"]
 
