@@ -17,7 +17,7 @@ RUN pip3 install tensorflow==1.15.0
 
 RUN conda update -y conda
 RUN conda install cudatoolkit==10.0.130
-RUN conda install keras
+RUN conda install keras==2.2.4
 
 #####################################################
 

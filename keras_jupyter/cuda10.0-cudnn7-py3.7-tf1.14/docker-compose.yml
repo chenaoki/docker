@@ -2,7 +2,7 @@ version: '2.3'
 services:
   keras_jupyter_sample:
     runtime: nvidia
-    image: chenaoki/keras_jupyter:0.2 
+    image: chenaoki/keras_jupyter:cuda10.0-cudnn7-py3.7-tf1.14
     container_name: keras_jupyter_sample
     ports:
       - "20002:8888"
